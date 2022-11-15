@@ -78,6 +78,8 @@ client.on('messageReactionAdd', (reaction, user) => {
 if(user == client.user){
     return;
   }
+
+    
   reactionName = reaction._emoji.name
  msgId = reaction.message.id
  serverId = reaction.message.guildId
@@ -91,21 +93,25 @@ try {
   reactionName = result[0].reaction
   reactionMessageId = result[0].messageId
   reactionRoleId = result[0].roleId
+  role_tree = result[0].roletree
 
+  role_name = role_tree.name;
+  
+  var guild = client.guilds.cache.get(serverId);
+
+  role_check = guild.roles.cache.find((r) => r.name === role_name);
+
+if(!role_check.editable) return;
+  
   if (reactionMessageId == msgId ){
     if(user.id == SomgurID){
       try_to_add = reaction.message.guild.members.cache.get(user.id).roles.add(reactionRoleId)
    reactionadd = reaction.message.guild.members.cache.get(reactionRoleId);
-      console.log(reactionadd)
-      console.log(reactionRoleId)
-      console.log(try_to_add)
       
-      return
-if(!reactionRoleId.editable){
-  return console.log("My highest role is lower than the mentioned user's role");
-}  if(reaction.message.guild.members.cache.get(user.id).roles.add(reactionRoleId)){
-      console.log("dit mag")
-    }
+// if(!reactionRoleId.editable){
+//   return console.log("My highest role is lower than the mentioned user's role");
+// } 
+
     }
     
 reaction.message.guild.members.cache.get(user.id).roles.add(reactionRoleId);
@@ -132,6 +138,15 @@ try {
   reactionName = result[0].reaction
   reactionMessageId = result[0].messageId
   reactionRoleId = result[0].roleId
+  role_tree = result[0].roletree
+
+  role_name = role_tree.name;
+  
+  var guild = client.guilds.cache.get(serverId);
+
+  role_check = guild.roles.cache.find((r) => r.name === role_name);
+
+if(!role_check.editable) return;
 
   if (reactionMessageId == msgId ){
 reaction.message.guild.members.cache.get(user.id).roles.remove(reactionRoleId);
@@ -201,8 +216,8 @@ if (result[0].roleId == myRole){
 }
 } catch (error) {
 }
-      rolecheck = msg.guild.roles.cache.get(myRole);
-if(!rolecheck.editable){
+      role_name = msg.guild.roles.cache.get(myRole);
+if(!role_name.editable){
     return msg.reply(`I cant edit that role (${RoleName}).`)
 }
   if (match){
@@ -238,8 +253,10 @@ const [, animated, name, emid] = match
       "messageId" : rrmessageid,    
       "reaction" : Reaction,
       "roleId" : myRole,
+      "roletree": role_name,
     }; 
 value.commands.push(reactionroleJSON);
+  console.log(value)
 db.set(ServerId, value);  
     })
 .catch(error => {
@@ -261,6 +278,7 @@ db.set(ServerId, value);
     const match = /<(a?):(.+):(\d+)>/u.exec(Reaction);
      if (msg.guild.roles.cache.find(role => role.name === RoleName)){
    myRole = msg.guild.roles.cache.find(role => role.name === RoleName)
+       role_name = myRole;
   myRole = myRole.id
   }
   else{
@@ -268,8 +286,11 @@ db.set(ServerId, value);
   } 
     let role = msg.mentions.roles.first();
 let botrole = msg.guild.roles.cache.find(role => role.name === "DND JS bot")
-    rolecheck = msg.guild.roles.cache.get(myRole);
-if(!rolecheck.editable){
+    
+    console.log(role_name.name)
+    console.log(role_name)
+      // console.log(role_name)
+if(!role_name.editable){
     return msg.reply(`I cant edit that role (${RoleName}).`)
 }
   
@@ -281,11 +302,12 @@ if (match){
 const [, animated, name, emid] = match
     Reaction = match[2]
     }
+
     rrcommands = {
   "server":ServerId,
    "messageid":id,
    "commands":[
-     {"messageId":id, "reaction":Reaction, "roleId":myRole},
+     {"messageId":id, "reaction":Reaction, "roleId":myRole, "roletree": role_name},
             ]
   };
    db.set(ServerId, rrcommands);
