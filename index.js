@@ -1,21 +1,9 @@
-
-// const { Client, GatewayIntentBits, EmbedBuilder } = require('discord.js')
-// const client = new Client({
-//   intents: [
-//     GatewayIntentBits.Guilds,
-//     GatewayIntentBits.GuildMessages,
-//     GatewayIntentBits.MessageContent,
-//     GatewayIntentBits.GuildMembers,
-//     GatewayIntentBits.GuildMessageReactions,
-//   ]
-// })
 const {
   Client,
   EmbedBuilder,
   GatewayIntentBits,
   Partials,
 } = require('discord.js');
-
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
@@ -30,86 +18,43 @@ const client = new Client({
     Partials.Reaction,
   ],
 });
-
 const Database = require("@replit/database");
 const db = new Database();
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 const SomgurID = "445177838426128384";
 const DanielID = "317632338622414849";
-
-
-// function searchDbJson(wordsearch, json){
-//   objectvalue = Object.values(json.commands)
-//     console.log(objectvalue)
-//     // console.log(objectvalue[0].messageId)
-// result = objectvalue.filter(playlist => playlist.reaction == wordsearch)
-// }
-
-// function getCountryByCode(emName, serverName ) {
-
-//   db.get(serverName).then(value => {
-    
-
-// // value = Object.values(value)
-// // return value.filter(function(item) { return item.name === code; });
-
-// objectvalue = Object.values(value.commands)
-//     console.log(objectvalue)
-//     // console.log(objectvalue[0].messageId)
-// result = objectvalue.filter(playlist => playlist.reaction == emName)
-// try {
-//   reactionName = result[0].reaction
-//   reactionMessageId = result[0].messageId
-//   reactionRoleId = result[0].roleId
-//   console.log("Result: ")
-//          console.log(reactionName)
-//     console.log(reactionMessageId)
-//     console.log(reactionRoleId)
-  
-// } catch (error) {
-//   console.log("does not exist");
-
 const mySecret = process.env['TOKEN']
 client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`)
-
 })
 client.on('messageReactionAdd', (reaction, user) => {
 if(user == client.user){
     return;
-  }
-  
-
-    
+  }  
   reactionName = reaction._emoji.name
- msgId = reaction.message.id
- serverId = reaction.message.guildId
+  msgId = reaction.message.id
+  serverId = reaction.message.guildId
+  db.get(serverId).then(value => {
+  objectvalue = Object.values(value.commands)
+  result = objectvalue.filter(playlist => playlist.reaction == reactionName)
+  try {
+    reactionName = result[0].reaction
+    reactionMessageId = result[0].messageId
+    reactionRoleId = result[0].roleId
+    role_tree = result[0].roletree
+    role_name = role_tree.name;
+    var guild = client.guilds.cache.get(serverId);
+    role_check = guild.roles.cache.find((r) => r.name === role_name);
+  if(!role_check.editable) return;
+    if (reactionMessageId == msgId ){
+      
+  reaction.message.guild.members.cache.get(user.id).roles.add(reactionRoleId);
   
-db.get(serverId).then(value => {
-  
-
-objectvalue = Object.values(value.commands)
-
-result = objectvalue.filter(playlist => playlist.reaction == reactionName)
-try {
-  reactionName = result[0].reaction
-  reactionMessageId = result[0].messageId
-  reactionRoleId = result[0].roleId
-  role_tree = result[0].roletree
-  role_name = role_tree.name;
-  var guild = client.guilds.cache.get(serverId);
-  role_check = guild.roles.cache.find((r) => r.name === role_name);
-if(!role_check.editable) return;
-  if (reactionMessageId == msgId ){
-    
-reaction.message.guild.members.cache.get(user.id).roles.add(reactionRoleId);
-
+    }
+  } catch (error) {
+    console.log(error);
   }
-} catch (error) {
-  console.log(error);
-}
-})
-
+  })
 })
 
 client.on('messageReactionRemove', (reaction, user) => {
