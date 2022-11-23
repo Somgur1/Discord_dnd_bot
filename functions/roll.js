@@ -31,5 +31,29 @@ module.exports = {
         .catch((error) => {
           msg.reply("Invalid input")
         });
+  },
+  roll_dice_slash_command: function(interaction){
+    const dice = interaction.options.getString('dice');
+
+      var url = 'https://rolz.org/api/?' + dice + '.json';
+      fetch(url)
+        .then(response => {
+          return response.json();
+        })
+        .then(user => {
+          var result = String(user["result"]);
+          const exampleEmbed = new EmbedBuilder()
+            .setColor(0x0099FF)
+            .setTitle('Dice roller')
+            .addFields(
+  		        { name: 'input', value: user["input"] },
+  		        { name: 'result', value: result, inline: true },
+  		        { name: 'details', value: user["details"], inline: true }
+            );
+          interaction.reply({ embeds: [exampleEmbed] })
+        })
+        .catch((error) => {
+        });
   }
-}
+   }
+

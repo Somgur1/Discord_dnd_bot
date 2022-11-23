@@ -77,10 +77,10 @@ module.exports = {
         "roletree": role_name,
       }; 
       value.commands.push(reactionroleJSON);
-      db.set(ServerId, value);  
+      db.set(server_id, value);  
     })
     .catch(error => {
-
+      console.log(error)
     })
   }
 }

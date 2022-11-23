@@ -59,6 +59,7 @@ client.on(Events.InteractionCreate, async interaction => {
 });
 client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`)
+  client.user.setActivity('D&D');
 })
 client.on('messageReactionAdd', (reaction, user) => {
   if(user == client.user){
@@ -82,7 +83,7 @@ client.on('messageCreate', function(msg) {
     if(randomNumber < 6)return;
   }
   const serverName = msg.guild.name
-  ServerId = msg.guild.id
+  const ServerId = msg.guild.id
   if(msg.author.id == SomgurID){
     if (msg.content.startsWith(prefix + 'dbclear')){
       if(msg.author.id == SomgurID){
@@ -101,7 +102,8 @@ client.on('messageCreate', function(msg) {
   }   
   if (msg.content.startsWith(prefix + 'roll')) {
     roll_dice.roll_dice(words, msg)
-  } 
+  }
+  
 });
 client.login(mySecret);
 

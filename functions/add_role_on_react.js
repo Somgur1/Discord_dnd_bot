@@ -3,6 +3,7 @@ const db = new Database();
 module.exports = {
   add_role_react: function(reaction, user, client){
   reactionName = reaction._emoji.name
+    console.log(reactionName);
   msgId = reaction.message.id
   server_id = reaction.message.guildId
   db.get(server_id).then(value => {
@@ -13,6 +14,7 @@ module.exports = {
   }
   objectvalue = Object.values(value.commands)
   result = objectvalue.filter(playlist => playlist.reaction == reactionName)
+    console.log(result);
   try {
     reactionName = result[0].reaction
     reactionMessageId = result[0].messageId
