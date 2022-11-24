@@ -6,7 +6,7 @@
 <div align="center">
 <img alt="repo size" src="https://img.shields.io/github/repo-size/Somgur1/Discord_dnd_bot">
 </div>
-<h4>I created this in <a href="https://replit.com">Replit</a></h4>
+<h4>I created this in <a href="https://replit.com">Replit</a>, in <q>Node.js</q></h4>
 
 
 <h2>How to use</h2>
