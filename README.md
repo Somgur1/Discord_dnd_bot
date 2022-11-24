@@ -5,6 +5,7 @@
 
 <div align="center">
 <img alt="repo size" src="https://img.shields.io/github/repo-size/Somgur1/Discord_dnd_bot">
+<img alt="JS badge"  src="https://img.shields.io/badge/Language-Javascript-red">
 </div>
 <h4>I created this in <a href="https://replit.com">Replit</a>, in <q>Node.js</q></h4>
 
