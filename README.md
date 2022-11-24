@@ -3,7 +3,7 @@
 <img alt="repo size" src="https://img.shields.io/github/repo-size/Somgur1/Discord_dnd_bot">
 
 
-To create commands use "depoy-commands.js" in the shell
+To create commands use <q>deploy-commands.js</q> in the shell
 
-To delete commands use "delete-command.js" in the shell
+To delete commands use <q>delete-command.js</q> in the shell
 
