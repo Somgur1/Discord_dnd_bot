@@ -34,10 +34,10 @@ module.exports = {
         Reaction = match[2]
       }
       db.get(server_id).then(value => {
-  party = null;
-  party = value.party;
   
-    if (party != null){
+  
+    try{
+      party = value.party
     rrcommands = {
         "server":server_id,
         "messageid": id,
@@ -48,7 +48,8 @@ module.exports = {
           [party]
       };
     }
-        else{
+        catch (error) {
+        
     rrcommands = {
         "server":server_id,
         "messageid": id,
@@ -58,8 +59,9 @@ module.exports = {
         "party":
           []
       };
-    
         }
+    
+        
         
     console.log(rrcommands)
   db.set(server_id, rrcommands);

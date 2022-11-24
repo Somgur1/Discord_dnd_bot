@@ -3,7 +3,6 @@ const db = new Database();
 module.exports = {
   add_role_react: function(reaction, user, client){
   reactionName = reaction._emoji.name
-    console.log(reactionName);
   msgId = reaction.message.id
   server_id = reaction.message.guildId
   db.get(server_id).then(value => {
@@ -14,18 +13,22 @@ module.exports = {
   }
   objectvalue = Object.values(value.commands)
   result = objectvalue.filter(playlist => playlist.reaction == reactionName)
-    console.log(result);
+
+try{
+  var guild = client.guilds.cache.get(server_id);
+  role_tree = result[0].roletree
+    role_name = role_tree.name;
+  role_check = guild.roles.cache.find((r) => r.name === role_name);
+    if(!role_check.editable) return;
+}
+  catch{
+    
+  }  
   try {
     reactionName = result[0].reaction
     reactionMessageId = result[0].messageId
     reactionRoleId = result[0].roleId
-    role_tree = result[0].roletree
-    role_name = role_tree.name;
-    var guild = client.guilds.cache.get(server_id);
-    role_check = guild.roles.cache.find((r) => r.name === role_name);
-    if(!role_check.editable) return;
-    if (reactionMessageId == msgId ){  
-      reaction.message.guild.members.cache.get(user.id).roles.add(reactionRoleId);
+    if (reactionMessageId == msgId ){      reaction.message.guild.members.cache.get(user.id).roles.add(reactionRoleId);
     }
     } 
     catch (error) {

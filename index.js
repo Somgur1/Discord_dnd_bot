@@ -93,6 +93,13 @@ client.on('messageCreate', function(msg) {
       else{
       }
     }
+    if (msg.content.startsWith(prefix + 'keyclear')) {
+  
+db.delete(ServerId);
+      msg.reply(`Key with id = "${ServerId}" cleared`)
+      
+  }
+
   }
   if (msg.content.startsWith(prefix + 'rradd')){
     rradd.rradd(words, msg, ServerId, SomgurID);
@@ -103,6 +110,8 @@ client.on('messageCreate', function(msg) {
   if (msg.content.startsWith(prefix + 'roll')) {
     roll_dice.roll_dice(words, msg)
   }
+  
+  
   
 });
 client.login(mySecret);

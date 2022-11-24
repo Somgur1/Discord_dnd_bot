@@ -20,36 +20,37 @@ db.get(server_id).then(value => {
   db.set(server_id, partyJSON);
   }
   else{
-    rrstuff = value.commands;
-    RRJSON = {
-      "rrsettings" : {
-        rrstuff
-        }
-    }
-      baseJson = {
-         "server":server_id,
-          "commands":[],
-      }
     
-    partyJSON = {
-         "party_name":party_name,
-          "party_member":[],
-      };
+    rrstuff = value.commands;
+    try{
+      party = value.party
+    }
+    catch (error) {
+  party = "";
+}
+
+    try{
+      rrmessage_id = value.messageid;
+      commands = value.commands;
+      rrserver_id = value.server; 
+    }
+    catch (error) {
+    rrmessage_id = "";
+    commands = "";
+    rrserver_id = "";
+}
+    
+    
      rrcommands = {
-        "server":"serverid",
-        "messageid": "messageid",
-        "commands":[
-          {"messageId":"messageid", "reaction":"reaction", "roleId":"myRole", "roletree": "role_name"},
-        ]
+        "server": rrserver_id,
+        "messageid": rrmessage_id,
+        commands
       };
     val = value
     // console.log("baseJSON1:")
-    console.log(value);
-    
-    value.party.push(partyJSON)
-    console.log(value);
-    console.log("value.party")
-    console.log(value.party)
+    console.log("rrcommands:")
+    console.log(rrcommands);
+  
 
   }
 });
