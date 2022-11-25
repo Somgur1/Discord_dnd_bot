@@ -12,8 +12,8 @@
 
 <h2>How to use</h2>
 
-To create commands use <q>deploy-commands.js</q> in the shell
+To create commands use <q>node deploy-commands.js</q> in the shell
 
-To delete commands use <q>delete-command.js</q> in the shell
+To delete commands use <q>node delete-command.js</q> in the shell
 
 
