@@ -43,7 +43,7 @@ module.exports = {
         .then(user => {
           var result = String(user["result"]);
           const exampleEmbed = new EmbedBuilder()
-            .setColor(0x0099FF)
+            .setColor('Red')
             .setTitle('Dice roller')
             .addFields(
   		        { name: 'input', value: user["input"] },

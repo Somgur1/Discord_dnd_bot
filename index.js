@@ -46,6 +46,34 @@ for (const file of commandFiles) {
 		console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
 	}
 }
+client.on(Events.InteractionCreate, interaction => {
+	if (!interaction.isAutocomplete()) return;
+  server_id = interaction.guild.id;
+  console.log(interaction.options.getFocused())
+const focusedValue = interaction.options.getFocused();
+  choices = []
+  
+		db.get(server_id).then(DB => {
+      if (!DB.party){
+        return;
+      }
+        DB.party.forEach(obj => {
+        Object.entries(obj).forEach(([key, value]) => {
+          if (key == "partyname"){
+          choices.push(value)
+            // console.log(`value: ${value} with key ${key} pushed`)
+          }
+            // console.log(`${key} ${value}`);
+        });
+        // console.log('-------------------');
+    })
+		const filtered = choices.filter(choice => choice.startsWith(focusedValue));
+		 interaction.respond(
+			filtered.map(choice => ({ name: choice, value: choice })),
+		);
+        })
+});
+
 client.on(Events.InteractionCreate, async interaction => {
 	if (!interaction.isChatInputCommand()) return;
 	const command = client.commands.get(interaction.commandName);
@@ -59,7 +87,7 @@ client.on(Events.InteractionCreate, async interaction => {
 });
 client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`)
-  client.user.setActivity('D&D');
+  client.user.setActivity('Dungeons and Dragons');
 })
 client.on('messageReactionAdd', (reaction, user) => {
   if(user == client.user){
@@ -99,8 +127,19 @@ db.delete(ServerId);
       msg.reply(`Key with id = "${ServerId}" cleared`)
       
   }
-
   }
+if (msg.content.startsWith(prefix + 'DBwhat')){
+    if(msg.author.id == SomgurID){
+db.get(ServerId).then(value => {
+  console.log("DB:")
+  console.log(value)
+  console.log("party:")
+  console.log(value.party[0].partymembers)
+  
+});
+    }
+  }
+  
   if (msg.content.startsWith(prefix + 'rradd')){
     rradd.rradd(words, msg, ServerId, SomgurID);
   }
@@ -108,9 +147,26 @@ db.delete(ServerId);
     rrcreate.rrcreate(words, msg, ServerId, SomgurID);
   }   
   if (msg.content.startsWith(prefix + 'roll')) {
-    roll_dice.roll_dice(words, msg)
+    msg.reply("`!roll` has been moved to slash command")
   }
+    if (msg.content.startsWith(prefix + 'testforeach')) {
   
+  array_party_names = []
+  db.get(ServerId).then(DB => {
+        DB.party.forEach(obj => {
+        Object.entries(obj).forEach(([key, value]) => {
+          if(key == "partyname"){
+          array_party_names.push(value)
+          console.log("array:")
+      console.log(array_party_names)
+          }
+            console.log(`${key} ${value}`);
+        });
+        console.log('-------------------');
+    })
+  })
+      
+    }
   
   
 });

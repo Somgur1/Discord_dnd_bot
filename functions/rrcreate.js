@@ -44,8 +44,7 @@ module.exports = {
         "commands":[
           {"messageId":id, "reaction":Reaction, "roleId":myRole, "roletree": role_name},
         ],
-        "party":
-          [party]
+        party
       };
     }
         catch (error) {
@@ -62,8 +61,7 @@ module.exports = {
         }
     
         
-        
-    console.log(rrcommands)
+
   db.set(server_id, rrcommands);
 });
 

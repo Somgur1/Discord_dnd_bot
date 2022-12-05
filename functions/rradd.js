@@ -29,9 +29,9 @@ module.exports = {
     return console.log("Use the command '!rrcreate' first")
   }
       objectvalue = Object.values(value.commands)
-      result = objectvalue.filter(playlist => playlist.roleId == myRole)
+      result = objectvalue.find(playlist => playlist.roleId == myRole)
       try {
-        if (result[0].roleId == myRole){
+        if (result.roleId == myRole){
           return msg.reply(`Role (${RoleName}) already exists`)
         }
       } 
@@ -48,9 +48,9 @@ module.exports = {
       else{
         Reactionfind = Reaction
       }
-      result = objectvalue.filter(playlist => playlist.reaction == Reactionfind)
+      result = objectvalue.find(playlist => playlist.reaction == Reactionfind)
       try {
-        if (result[0].reaction == Reactionfind){
+        if (result.reaction == Reactionfind){
           return msg.reply(`Reaction (${Reaction}) already exists`)
         }
       } 

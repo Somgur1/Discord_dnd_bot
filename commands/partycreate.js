@@ -11,7 +11,15 @@ module.exports = {
 		option.setName('partyname')
 			.setDescription('Name of the party')
 			.setRequired(true)
-                   ),
+                   )
+  .addStringOption(option =>
+		option.setName('editable')
+			.setDescription('Do you want anyone to add members')
+			.setRequired(true)
+      .addChoices(
+					{ name: 'Yes', value: "true" },
+					{ name: 'No', value: "false" },
+      )),
   async execute(interaction) {
     party_functions.party_create(interaction);
 	},

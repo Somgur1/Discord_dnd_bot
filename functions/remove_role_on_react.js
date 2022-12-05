@@ -13,12 +13,12 @@ module.exports = {
       return 
     }
       objectvalue = Object.values(value.commands)
-      result = objectvalue.filter(playlist => playlist.reaction == reactionName)
+      result = objectvalue.find(playlist => playlist.reaction == reactionName)
       try {
-        reactionName = result[0].reaction
-        reactionMessageId = result[0].messageId
-        reactionRoleId = result[0].roleId
-        role_tree = result[0].roletree
+        reactionName = result.reaction
+        reactionMessageId = result.messageId
+        reactionRoleId = result.roleId
+        role_tree = result.roletree
         role_name = role_tree.name;
         var guild = client.guilds.cache.get(serverId);
         role_check = guild.roles.cache.find((r) => r.name === role_name);
