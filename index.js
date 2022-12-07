@@ -37,53 +37,47 @@ client.commands = new Collection();
 const commandsPath = path.join(__dirname, 'commands');
 const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
 for (const file of commandFiles) {
-	const filePath = path.join(commandsPath, file);
-	const command = require(filePath);
-	if ('data' in command && 'execute' in command) {
-		client.commands.set(command.data.name, command);
+  const filePath = path.join(commandsPath, file);
+  const command = require(filePath);
+  if ('data' in command && 'execute' in command) {
+    client.commands.set(command.data.name, command);
     console.log(`got path at ${filePath}`)
-	} else {
-		console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
-	}
+  } else {
+    console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
+  }
 }
 client.on(Events.InteractionCreate, interaction => {
-	if (!interaction.isAutocomplete()) return;
+  if (!interaction.isAutocomplete()) return;
   server_id = interaction.guild.id;
-  console.log(interaction.options.getFocused())
-const focusedValue = interaction.options.getFocused();
-  choices = []
-  
-		db.get(server_id).then(DB => {
-      if (!DB.party){
-        return;
-      }
-        DB.party.forEach(obj => {
-        Object.entries(obj).forEach(([key, value]) => {
-          if (key == "partyname"){
-          choices.push(value)
-            // console.log(`value: ${value} with key ${key} pushed`)
-          }
-            // console.log(`${key} ${value}`);
-        });
-        // console.log('-------------------');
+  const focusedValue = interaction.options.getFocused();
+  choices = [];
+  db.get(server_id).then(DB => {
+    if (!DB.party){
+      return;
+    }
+    DB.party.forEach(obj => {
+      Object.entries(obj).forEach(([key, value]) => {
+        if (key == "partyname"){
+          choices.push(value);
+        }
+      });
     })
-		const filtered = choices.filter(choice => choice.startsWith(focusedValue));
-		 interaction.respond(
-			filtered.map(choice => ({ name: choice, value: choice })),
-		);
-        })
+    const filtered = choices.filter(choice => choice.startsWith(focusedValue));
+    interaction.respond(
+        filtered.map(choice => ({ name: choice, value: choice })),
+    );
+  })
 });
-
 client.on(Events.InteractionCreate, async interaction => {
-	if (!interaction.isChatInputCommand()) return;
-	const command = client.commands.get(interaction.commandName);
-	if (!command) return;
-	try {
-		await command.execute(interaction);
-	} catch (error) {
-		console.error(error);
-		await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
-	}
+  if (!interaction.isChatInputCommand()) return;
+  const command = client.commands.get(interaction.commandName);
+  if (!command) return;
+  try {
+    await command.execute(interaction);
+  } catch (error) {
+    console.error(error);
+    await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+  }
 });
 client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`)
@@ -92,15 +86,15 @@ client.on("ready", () => {
 client.on('messageReactionAdd', (reaction, user) => {
   if(user == client.user){
     return;
-  }  
-  role_add_react.add_role_react(reaction, user, client)
+  }
+  role_add_react.add_role_react(reaction, user, client);
 })
 client.on('messageReactionRemove', (reaction, user) => {
   if(user == client.user){
     return;
-  }  
+  }
   role_remove_react.remove_role_react(reaction, user, client);
-}) 
+})
 client.on('messageCreate', function(msg) {
   if(msg.author == client.user)return;
   const prefix = "!"
@@ -110,65 +104,31 @@ client.on('messageCreate', function(msg) {
     randomNumber = Math.floor(Math.random() * 100) + 1
     if(randomNumber < 6)return;
   }
-  const serverName = msg.guild.name
-  const ServerId = msg.guild.id
+  const serverName = msg.guild.name;
+  const ServerId = msg.guild.id;
   if(msg.author.id == SomgurID){
-    if (msg.content.startsWith(prefix + 'dbclear')){
-      if(msg.author.id == SomgurID){
-      db.empty();
-      msg.reply("db cleared")
-      }
-      else{
-      }
-    }
     if (msg.content.startsWith(prefix + 'keyclear')) {
-  
-db.delete(ServerId);
-      msg.reply(`Key with id = "${ServerId}" cleared`)
-      
-  }
-  }
-if (msg.content.startsWith(prefix + 'DBwhat')){
-    if(msg.author.id == SomgurID){
-db.get(ServerId).then(value => {
-  console.log("DB:")
-  console.log(value)
-  console.log("party:")
-  console.log(value.party[0].partymembers)
-  
-});
+      db.delete(ServerId);
+      return msg.reply(`Key with id = "${ServerId}" cleared`);
     }
   }
-  
+  if (msg.content.startsWith(prefix + 'DBwhat')){
+    if(msg.author.id == SomgurID){
+      db.get(ServerId).then(value => {
+        console.log("DB:")
+        console.log(value)
+      });
+    }
+  }
   if (msg.content.startsWith(prefix + 'rradd')){
     rradd.rradd(words, msg, ServerId, SomgurID);
   }
   if (msg.content.startsWith(prefix + 'rrcreate')){
     rrcreate.rrcreate(words, msg, ServerId, SomgurID);
-  }   
+  }
   if (msg.content.startsWith(prefix + 'roll')) {
     msg.reply("`!roll` has been moved to slash command")
   }
-    if (msg.content.startsWith(prefix + 'testforeach')) {
-  
-  array_party_names = []
-  db.get(ServerId).then(DB => {
-        DB.party.forEach(obj => {
-        Object.entries(obj).forEach(([key, value]) => {
-          if(key == "partyname"){
-          array_party_names.push(value)
-          console.log("array:")
-      console.log(array_party_names)
-          }
-            console.log(`${key} ${value}`);
-        });
-        console.log('-------------------');
-    })
-  })
-      
-    }
-  
-  
 });
 client.login(mySecret);
 

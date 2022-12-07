@@ -1,9 +1,7 @@
 const { REST, Routes } = require('discord.js');
 clientId = "1032986069643296798";
 const token = process.env['TOKEN']
-
 const rest = new REST({ version: '10' }).setToken(token);
-
 
 // for server commands
 // rest.delete(Routes.applicationGuildCommand(clientId, guildId, 'commandId'))

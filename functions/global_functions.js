@@ -1,19 +1,19 @@
 module.exports = {
   searchInDb: function(db, searchValue){
-  jsonNumber = null;
-  foreachNumber = 0;
-     db.forEach(obj => {
-        Object.entries(obj).forEach(([key, value]) => {
-          if (value == searchValue){
+    jsonNumber = null;
+    foreachNumber = 0;
+    db.forEach(obj => {
+      Object.entries(obj).forEach(([key, value]) => {
+        if (value == searchValue){
           jsonNumber = foreachNumber;
-          }
-        });
-       foreachNumber++;
+        }
+      });
+      foreachNumber++;
     })
     return jsonNumber;
   },
   jsonToString: function(json){
-    jsonString = JSON.stringify(json)
+    jsonString = JSON.stringify(json);
     jsonString = jsonString.replaceAll('[', '');
     jsonString = jsonString.replaceAll(']', '');
     jsonString = jsonString.replaceAll('{', '');
@@ -23,7 +23,7 @@ module.exports = {
     jsonString = jsonString.replaceAll('"', '');
     jsonString = jsonString.replaceAll(':', ' : ');
     jsonString = jsonString.replaceAll('null', '');
-    
+
     return jsonString
   }
 }
