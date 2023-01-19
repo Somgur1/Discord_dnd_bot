@@ -89,8 +89,7 @@ module.exports = {
       reaction = firstEmoji[0];
     }
         const channel = interaction.options.getChannel('channel_name')
-        server_id = interaction.commandGuildId;
-        
+        server_id = interaction.guildId;
         if(!role.editable){
             return interaction.reply(`I cant edit that role (${roleName}).`);
         }
@@ -130,6 +129,8 @@ module.exports = {
                     };
                 }
                 db.set(server_id, rrcommands);
+              console.log("after db Set")
+              console.log(rrcommands)
               interaction.reply({ content: 'Created your reaction role', ephemeral: true });
             });
         });
