@@ -2,14 +2,6 @@ const Database = require("@replit/database");
 const db = new Database();
 const emojiRegex = require('emoji-regex');
 
-function countEmojis(str) {
-  const emReg = emojiRegex();
-   var firstEmoji = str.match(emReg);
-  if (firstEmoji == null){
-    firstEmoji = 0;
-  }
-  return firstEmoji;
-}
 
 module.exports = {
     rrcreate: function(message_split, msg, server_id, SomgurId){
@@ -82,16 +74,23 @@ module.exports = {
       
         roleCheck = interaction.guild.roles.cache.find(role => role.name === roleName);
       reaction = interaction.options.getString('emoji');
-    const emReg = emojiRegex();
+    const match = /<(a?):(.+):(\d+)>/u.exec(reaction);
+      const emReg = emojiRegex();
     var firstEmoji = reaction.match(emReg);
     if (!firstEmoji){
-      return interaction.reply({ content: `Invalid emoji (${reaction})`, ephemeral: true })
+      if (!match){
+        return interaction.reply({ content: `Invalid emoji (${reaction})`, ephemeral: true })
     }
-    reaction = firstEmoji[0];
+      else{
+      reaction = match[0];
+      }
+  }
+      else{
+      reaction = firstEmoji[0];
+    }
         const channel = interaction.options.getChannel('channel_name')
         server_id = interaction.commandGuildId;
         
-        const match = /<(a?):(.+):(\d+)>/u.exec(reaction);
         if(!role.editable){
             return interaction.reply(`I cant edit that role (${roleName}).`);
         }

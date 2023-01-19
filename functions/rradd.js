@@ -2,15 +2,6 @@ const Database = require("@replit/database");
 const db = new Database();
 const emojiRegex = require('emoji-regex');
 
-function countEmojis(str) {
-  const emReg = emojiRegex();
-   var firstEmoji = str.match(emReg);
-  if (firstEmoji == null){
-    firstEmoji = 0;
-  }
-  return firstEmoji;
-}
-
 module.exports = {
     rradd: function(message_split, msg, server_id, SomgurId){
         if(msg.author.id != SomgurId){
@@ -103,13 +94,21 @@ module.exports = {
         const role = interaction.options.getRole('role_to_add');
         roleId = role.id;
         reaction = interaction.options.getString('emoji');
+    const match = /<(a?):(.+):(\d+)>/u.exec(reaction);
       const emReg = emojiRegex();
     var firstEmoji = reaction.match(emReg);
     if (!firstEmoji){
-      return interaction.reply({ content: `Invalid emoji (${reaction})`, ephemeral: true })
+      if (!match){
+        return interaction.reply({ content: `Invalid emoji (${reaction})`, ephemeral: true })
     }
-    reaction = firstEmoji[0];
-        const match = /<(a?):(.+):(\d+)>/u.exec(reaction);
+      else{
+      reaction = match[0];
+      }
+  }
+      else{
+      reaction = firstEmoji[0];
+    }
+    
         db.get(server_id).then(value => {
             value_check = null;
             value_check = value;
