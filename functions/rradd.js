@@ -1,10 +1,14 @@
 const Database = require("@replit/database");
 const db = new Database();
+const emojiRegex = require('emoji-regex');
 
 function countEmojis(str) {
-  var emojiRegex = /[\uD800-\uDBFF][\uDC00-\uDFFF]/g;
-  var matches = str.match(emojiRegex);
-  return matches ? matches.length : 0;
+  const emReg = emojiRegex();
+   var firstEmoji = str.match(emReg);
+  if (firstEmoji == null){
+    firstEmoji = 0;
+  }
+  return firstEmoji;
 }
 
 module.exports = {
@@ -99,12 +103,12 @@ module.exports = {
         const role = interaction.options.getRole('role_to_add');
         roleId = role.id;
         reaction = interaction.options.getString('emoji');
-      if(countEmojis(reaction) == 0){
-        return interaction.reply({ content: `Invalid emoji (${reaction})`, ephemeral: true });
-      }
-    else if(countEmojis(reaction) != 1){
-        return interaction.reply({ content: `Please enter 1 emoji`, ephemeral: true });
+      const emReg = emojiRegex();
+    var firstEmoji = reaction.match(emReg);
+    if (!firstEmoji){
+      return interaction.reply({ content: `Invalid emoji (${reaction})`, ephemeral: true })
     }
+    reaction = firstEmoji[0];
         const match = /<(a?):(.+):(\d+)>/u.exec(reaction);
         db.get(server_id).then(value => {
             value_check = null;
@@ -165,7 +169,6 @@ try{
                 "roletree": role,
             };
             value.commands.push(reactionroleJSON);
-          console.log(value)
             db.set(server_id, value);
           interaction.reply({ content: 'Created your reaction role', ephemeral: true });
         })

@@ -1,10 +1,14 @@
 const Database = require("@replit/database");
 const db = new Database();
+const emojiRegex = require('emoji-regex');
 
 function countEmojis(str) {
-  var emojiRegex = /[\uD800-\uDBFF][\uDC00-\uDFFF]/g;
-  var matches = str.match(emojiRegex);
-  return matches ? matches.length : 0;
+  const emReg = emojiRegex();
+   var firstEmoji = str.match(emReg);
+  if (firstEmoji == null){
+    firstEmoji = 0;
+  }
+  return firstEmoji;
 }
 
 module.exports = {
@@ -78,12 +82,12 @@ module.exports = {
       
         roleCheck = interaction.guild.roles.cache.find(role => role.name === roleName);
       reaction = interaction.options.getString('emoji');
-      if(countEmojis(reaction) == 0){
-        return interaction.reply({ content: `Invalid emoji (${reaction})`, ephemeral: true });
-      }
-    else if(countEmojis(reaction) != 1){
-        return interaction.reply({ content: `Please enter 1 emoji`, ephemeral: true });
+    const emReg = emojiRegex();
+    var firstEmoji = reaction.match(emReg);
+    if (!firstEmoji){
+      return interaction.reply({ content: `Invalid emoji (${reaction})`, ephemeral: true })
     }
+    reaction = firstEmoji[0];
         const channel = interaction.options.getChannel('channel_name')
         server_id = interaction.commandGuildId;
         
