@@ -121,10 +121,10 @@ client.on('messageCreate', function(msg) {
     }
   }
   if (msg.content.startsWith(prefix + 'rradd')){
-    rradd.rradd(words, msg, ServerId, SomgurID);
+    msg.reply("This command has been moved to slash command");
   }
   if (msg.content.startsWith(prefix + 'rrcreate')){
-    rrcreate.rrcreate(words, msg, ServerId, SomgurID);
+    msg.reply("This command has been moved to slash command");
   }
   if (msg.content.startsWith(prefix + 'roll')) {
     msg.reply("`!roll` has been moved to slash command")

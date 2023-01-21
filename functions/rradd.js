@@ -90,7 +90,7 @@ module.exports = {
                 return interaction.reply("You cant make this command. You need to have the role `DM`.");
             }
         }
-        server_id = interaction.commandGuildId;
+        server_id = interaction.guildId;
         const role = interaction.options.getRole('role_to_add');
         roleId = role.id;
         reaction = interaction.options.getString('emoji');
