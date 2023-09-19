@@ -5,6 +5,7 @@ const {
 } = require('discord.js');
 const global_functions = require("./global_functions");
 const globalFunctions = require ('./global_functions');
+//checks if is an valid URL
 function urlChecker(s) {
     var regexp = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
     return regexp.test(s);

@@ -1,6 +1,7 @@
 const {
   EmbedBuilder,
 } = require('discord.js');
+//these are all the races in DND
 const races = ["Human", "Elf", "Dwarf", "Halfling", "Dragonborn", "Gnome", "Half-Elf",
 "Half-Orc", "Tiefling", "Aarakocra", "Aasimar", "Leonin", "Satyr", "Owlin", "Genasi", "Bugbear",
 "Centaur", "Changeling", "Deep Gnome", "Duergar", "Eladrin", "Fairy", "Firbolg",
@@ -9,6 +10,7 @@ const races = ["Human", "Elf", "Dwarf", "Halfling", "Dragonborn", "Gnome", "Half
 "Tortle", "Triton", "Yuan-ti", "Kalashtar", "Warforged", "Autognome", "Giff", "Hadozee",
 "Plasmoid", "Thri-kreen", "Loxodon", "Simic Hybrid", "Vedalken",
 "Verdan", "Locathah", "Kender", "Grung"];
+//these are all the classes in DND
 const classes = ["Fighter", "Cleric", "Wizard", "Rogue", "Barbarian", "Bard", "Druid", "Monk", "Paladin",
 "Ranger", "Sorcerer", "Warlock", "Wizard", "Artificer", "Blood Hunter"];
 
@@ -49,10 +51,9 @@ if (interaction.options.getSubcommand() === 'official_random_abilities'){
     total: sum
   }
   console.log(rollsarray)
-  // Return the sum
   return rollsarray
 }
-
+//Generate a random character
 function generateRandomCharacter(interaction) {
     let race;
     let characterClass;
@@ -71,8 +72,7 @@ function generateRandomCharacter(interaction) {
      intelligence = rollForStat(interaction);
      wisdom = rollForStat(interaction);
      charisma = rollForStat(interaction);
-  //}
-  
+  //check what style of randomizer to use
     if (interaction.options.getSubcommand() === 'official_random_abilities'){
       strength = strength.allrolls + "\n" + strength.total,
             dexterity = dexterity.allrolls + "\n" + dexterity.total,
@@ -106,7 +106,7 @@ function generateRandomCharacter(interaction) {
 
     return character;
 }
-
+//place all the values in and embed
 module.exports = {
   randomCharacter: function random_character(interaction){
     const randomCharacter = generateRandomCharacter(interaction);

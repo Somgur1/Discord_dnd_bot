@@ -46,6 +46,7 @@ for (const file of commandFiles) {
     console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
   }
 }
+//This gets called when you search for a party in command "addmember".
 client.on(Events.InteractionCreate, interaction => {
   if (!interaction.isAutocomplete()) return;
   server_id = interaction.guild.id;
@@ -68,6 +69,8 @@ client.on(Events.InteractionCreate, interaction => {
     );
   })
 });
+
+//this gets called when a command get's called
 client.on(Events.InteractionCreate, async interaction => {
   if (!interaction.isChatInputCommand()) return;
   const command = client.commands.get(interaction.commandName);
@@ -79,6 +82,7 @@ client.on(Events.InteractionCreate, async interaction => {
     await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
   }
 });
+//this is the activity on the bot
 client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`)
   client.user.setActivity('Dungeons and Dragons');

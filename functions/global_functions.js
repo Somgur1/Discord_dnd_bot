@@ -1,4 +1,5 @@
 module.exports = {
+  //this function is used to search in the DB
   searchInDb: function(db, searchValue){
     jsonNumber = null;
     foreachNumber = 0;
@@ -12,6 +13,7 @@ module.exports = {
     })
     return jsonNumber;
   },
+  //this converts JSON to string in a list style
   jsonToString: function(json){
     jsonString = JSON.stringify(json);
     jsonString = jsonString.replaceAll('[', '');
