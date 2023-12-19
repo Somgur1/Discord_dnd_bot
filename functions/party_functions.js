@@ -1,15 +1,16 @@
-const Database = require("@replit/database");
-const db = new Database();
+const fs = require('fs');
 const {
     EmbedBuilder,
 } = require('discord.js');
 const global_functions = require("./global_functions");
 const globalFunctions = require ('./global_functions');
-//checks if is an valid URL
 function urlChecker(s) {
     var regexp = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
     return regexp.test(s);
 }
+
+
+
 module.exports = {
     party_create: function(interaction){
         const party_name = interaction.options.getString('partyname');
@@ -22,18 +23,17 @@ module.exports = {
         }
         const server_id = interaction.guildId;
         const user_id = interaction.user.id;
-        db.get(server_id).then(value => {
+        fs.readFile(`json/${server_id}/party_${server_id}.json`, 'utf8', (err, value) => {
+            
+            // const partyExists = (value.party || []).some(party => party.partyname === party_name);
+            // console.log(partyExists)
+            // if(partyExists){
+            //     console.log("does exist")
+            //     interaction.def(`Name ${party_name} already exists`);
+            //     return;
+            // }
             try{
-                rrmessage_id = value.messageid;
-                commands = value.commands;
-                rrserver_id = value.server;
-            }
-            catch (error) {
-                rrmessage_id = "";
-                commands = "";
-                rrserver_id = "";
-            }
-            try{
+                value = JSON.parse(value);
                 party = value.party
             }
             catch (error) {
@@ -41,9 +41,9 @@ module.exports = {
             }
             if(party == ""){
                 dbJSON = {
-                    "server": rrserver_id,
-                    "messageid": rrmessage_id,
-                    commands,
+                    // "server": rrserver_id,
+                    // "messageid": rrmessage_id,
+                    // commands,
                     "party":[
                         {"partyname": party_name,
                             "dm" : user_id,
@@ -60,10 +60,14 @@ module.exports = {
                     "editable" : isEditableByAnyone,
                     "partymembers":[]
                 }
+                console.log(value)
                 value.party.push(partyadd)
                 dbJSON = value;
             }
-            db.set(server_id, dbJSON)
+            fs.writeFile(`json/${server_id}/party_${server_id}.json`, JSON.stringify(dbJSON, null, 4), (err) => {
+                if (err) throw err;
+                console.log('rrcommands has been written to rrcommands.json');
+            });
         });
         interaction.reply("Party `" + party_name +"` made.");
     },
@@ -87,7 +91,8 @@ module.exports = {
                 return interaction.reply("Please enter a valid URL");
             }
         }
-        db.get(server_id).then(DB => {
+        fs.readFile(`json/${server_id}/party_${server_id}.json`, 'utf8', (err, DB) => {
+            DB = JSON.parse(DB);
             objectvalue = Object.values(DB.party)
             result = objectvalue.find(party => party.partyname == party_name)
             number_in_db = globalFunctions.searchInDb(DB.party, party_name);
@@ -115,14 +120,19 @@ module.exports = {
                 "image" : party_member_image_url
             }
             DB.party[number_in_db].partymembers.push(party_member);
-            db.set(server_id, DB);
+            fs.writeFile(`json/${server_id}/party_${server_id}.json`, JSON.stringify(DB, null, 4), (err) => {
+                if (err) throw err;
+                console.log('rrcommands has been written to rrcommands.json');
+            });
             interaction.reply({content: "Member`" + party_member_name +"` made.", embeds: [member_embed] });
         });
     },
     view_party: function(interaction){
         const party_name = interaction.options.getString('partyname_to_view');
         const server_id = interaction.guild.id;
-        db.get(server_id).then(DB => {
+        fs.readFile(`json/${server_id}/party_${server_id}.json`, 'utf8', (err, DB) => {
+            DB = JSON.parse(DB);
+            console.log(DB);
             objectvalue = Object.values(DB.party);
             result = objectvalue.find(party => party.partyname == party_name);
             jsonString = global_functions.jsonToString(result.partymembers);
@@ -133,7 +143,7 @@ module.exports = {
         server_id = interaction.guild.id;
         const party_name = interaction.options.getString('partyname_to_delete');
         const userId = interaction.user.id;
-        db.get(server_id).then(DB => {
+        fs.readFile(`json/${server_id}/party_${server_id}.json`, 'utf8', (err, DB) => {
             number_in_db = globalFunctions.searchInDb(DB.party, party_name);
             if (number_in_db == null){
                 return interaction.reply("Party `" + party_name +"` not found");
@@ -145,7 +155,10 @@ module.exports = {
             delete DB.party[number_in_db];
             partys = DB.party.filter(item => item != null);
             DB.party = partys;
-            db.set(server_id, DB);
+            fs.writeFile(`json/${server_id}/party_${server_id}.json`, JSON.stringify(DB, null, 4), (err) => {
+                if (err) throw err;
+                console.log('rrcommands has been written to rrcommands.json');
+            });
             interaction.reply({content: "you delet `" + party_name +"`" });
         });
     },
@@ -154,7 +167,7 @@ module.exports = {
         const userId = interaction.user.id;
         const partyName = interaction.options.getString('partyname');
         const memberName = interaction.options.getString('name_of_member');
-        db.get(server_id).then(DB => {
+        fs.readFile(`json/${server_id}/party_${server_id}.json`, 'utf8', (err, DB) => {
             number_in_db = globalFunctions.searchInDb(DB.party, partyName);
             if (number_in_db == null){
                 return interaction.reply("Party `" + partyName +"` not found" );
@@ -174,7 +187,10 @@ module.exports = {
             delete DB.party[number_in_db].partymembers[nameNumber];
             partymembers = DB.party[number_in_db].partymembers.filter(item => item != null);
             DB.party[number_in_db].partymembers = partymembers;
-            db.set(server_id, DB);
+            fs.writeFile(`json/${server_id}/party_${server_id}.json`, JSON.stringify(DB, null, 4), (err) => {
+                if (err) throw err;
+                console.log('rrcommands has been written to rrcommands.json');
+            });
             interaction.reply({content: "you delet `" + memberName +"`" });
         });
     }

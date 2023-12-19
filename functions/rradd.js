@@ -1,6 +1,13 @@
-const Database = require("@replit/database");
-const db = new Database();
+var mysql = require('mysql');
+var con = mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  password: "",
+  database: "dnd_bot",
+  charset: 'utf8mb4' // Add charset to support emojis
+});
 const emojiRegex = require('emoji-regex');
+const fs = require('fs');
 
 module.exports = {
     rradd: function(message_split, msg, server_id, SomgurId){
@@ -84,7 +91,7 @@ module.exports = {
                 console.log(error);
             })
     },
-  rraddCommand: function(interaction, SomgurId){
+    rraddCommand: function(interaction, SomgurId){
         if(interaction.user.id != SomgurId){
             if (msg.member.roles.cache.some(role => role.name !== 'DM')) {
                 return interaction.reply("You cant make this command. You need to have the role `DM`.");
@@ -109,7 +116,10 @@ module.exports = {
       reaction = firstEmoji[0];
     }
     
-        db.get(server_id).then(value => {
+        // db.get(server_id).then(value => {
+            fs.readFile(`json/${server_id}/reactRoles_${server_id}.json`, 'utf8', (err, value) => {
+            value = JSON.parse(value);
+            console.log(value)
             value_check = null;
             value_check = value;
             if (value_check == null){
@@ -168,7 +178,16 @@ try{
                 "roletree": role,
             };
             value.commands.push(reactionroleJSON);
-            db.set(server_id, value);
+            // db.set(server_id, value);
+            fs.writeFile(`json/${server_id}/reactRoles_${server_id}.json`, JSON.stringify(value, null, 4), (err) => {
+                if (err) throw err;
+                console.log('rrcommands has been written to rrcommands.json');
+            });
+            // fs.writeFile(`json/reactRoles_${server_id}.json`, JSON.stringify(rrcommands, null, 2), (err) => {
+            //     if (err) throw err;
+            //     console.log('rrcommands has been written to rrcommands.json');
+            // });
+
           interaction.reply({ content: 'Created your reaction role', ephemeral: true });
         })
             

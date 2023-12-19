@@ -1,16 +1,16 @@
-const Database = require("@replit/database");
-const db = new Database();
+const fs = require('fs');
 module.exports = {
   remove_role_react: function(reaction, user, client){
     reactionName = reaction._emoji.name;
     msgId = reaction.message.id;
     serverId = reaction.message.guildId;
-    db.get(serverId).then(value => {
+    fs.readFile(`json/${server_id}/reactRoles_${server_id}.json`, 'utf8', (err, value) => {
       value_check = null;
       value_check = value;
       if (value_check == null){
         return;
       }
+      value = JSON.parse(value);
       objectvalue = Object.values(value.commands);
       result = objectvalue.find(reaction => reaction.reaction == reactionName);
       try {

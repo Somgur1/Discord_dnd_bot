@@ -6,6 +6,7 @@ const rrOldFunctions = require('./../functions/rradd')
 const SomgurID = "445177838426128384";
 
 
+
 module.exports = {
 data: new SlashCommandBuilder()
 		.setName('rrcreate')

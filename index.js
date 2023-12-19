@@ -20,22 +20,55 @@ const client = new Client({
     Partials.Reaction,
   ],
 });
-const Database = require("@replit/database");
-const db = new Database();
-const roll_dice = require('./functions/roll');
-const rrcreate = require('./functions/rrcreate');
-const rradd = require('./functions/rradd');
-const role_remove_react = require('./functions/remove_role_on_react');
-const role_add_react = require('./functions/add_role_on_react');
-const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
-const SomgurID = "445177838426128384";
-const DanielID = "317632338622414849";
+var mysql = require('mysql');
+
+// require('dotenv').config()
+// const APPLICATION_ID = process.env.APPLICATION_ID 
+// const TOKEN = process.env.TOKEN 
+// const PUBLIC_KEY = process.env.PUBLIC_KEY || 'not set'
+// const GUILD_ID = process.env.GUILD_ID 
+
+// const axios = require('axios')
+// const express = require('express');
+// const { InteractionType, InteractionResponseType, verifyKeyMiddleware } = require('discord-interactions');
+
+// const app = express();
+
+// const discord_api = axios.create({
+//   baseURL: 'https://discord.com/api/',
+//   timeout: 3000,
+//   headers: {
+// 	"Access-Control-Allow-Origin": "*",
+// 	"Access-Control-Allow-Methods": "GET, POST, PUT, DELETE",
+// 	"Access-Control-Allow-Headers": "Authorization",
+// 	"Authorization": `Bot ${TOKEN}`
+//   }
+// });
+
+
+
+
+
 const fs = require('node:fs');
 const path = require('node:path');
-const mySecret = process.env['TOKEN'];
 client.commands = new Collection();
+const foldersPath = path.join(__dirname, 'commands');
+const commandFolders = fs.readdirSync(foldersPath);
 const commandsPath = path.join(__dirname, 'commands');
 const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+const role_remove_react = require('./functions/remove_role_on_react');
+const role_add_react = require('./functions/add_role_on_react');
+// const DB = require("@replit/database");
+// const db = new DB();
+// const { Redis } = require('ioredis');
+// const redis = new Redis;
+// import { createClient } from 'redis';
+
+client.on('ready', () => {
+  console.log(`Logged in as ${client.user.tag}!`);
+  client.user.setActivity('Dungeons and Dragons');
+});
+
 for (const file of commandFiles) {
   const filePath = path.join(commandsPath, file);
   const command = require(filePath);
@@ -46,13 +79,35 @@ for (const file of commandFiles) {
     console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
   }
 }
+
+client.on(Events.InteractionCreate, async interaction => {
+	if (!interaction.isChatInputCommand()) return;
+
+	const command = client.commands.get(interaction.commandName);
+
+	if (!command) return;
+
+	try {
+		await command.execute(interaction);
+	} catch (error) {
+		console.error(error);
+		if (interaction.replied || interaction.deferred) {
+			await interaction.followUp({ content: 'There was an error while executing this command!', ephemeral: true });
+		} else {
+			await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+		}
+	}
+});
+
 //This gets called when you search for a party in command "addmember".
 client.on(Events.InteractionCreate, interaction => {
   if (!interaction.isAutocomplete()) return;
+  console.log("search called");
   server_id = interaction.guild.id;
   const focusedValue = interaction.options.getFocused();
   choices = [];
-  db.get(server_id).then(DB => {
+  fs.readFile(`json/${server_id}/party_${server_id}.json`, 'utf8', (err, DB) => {
+    DB = JSON.parse(DB);
     if (!DB.party){
       return;
     }
@@ -70,69 +125,50 @@ client.on(Events.InteractionCreate, interaction => {
   })
 });
 
-//this gets called when a command get's called
-client.on(Events.InteractionCreate, async interaction => {
-  if (!interaction.isChatInputCommand()) return;
-  const command = client.commands.get(interaction.commandName);
-  if (!command) return;
-  try {
-    await command.execute(interaction);
-  } catch (error) {
-    console.error(error);
-    await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
-  }
-});
-//this is the activity on the bot
-client.on("ready", () => {
-  console.log(`Logged in as ${client.user.tag}!`)
-  client.user.setActivity('Dungeons and Dragons');
-})
+
 client.on('messageReactionAdd', (reaction, user) => {
-  if(user == client.user){
+  if (user == client.user) {
     return;
   }
   role_add_react.add_role_react(reaction, user, client);
 })
+
 client.on('messageReactionRemove', (reaction, user) => {
-  if(user == client.user){
+  if (user == client.user) {
     return;
   }
   role_remove_react.remove_role_react(reaction, user, client);
 })
-client.on('messageCreate', function(msg) {
+
+client.on('messageCreate', async function(msg) {
   if(msg.author == client.user)return;
   const prefix = "!"
   var words = msg.content.split(' ');
   if (!msg.content.startsWith(prefix))return;
-  if(msg.author.id == DanielID){
-    randomNumber = Math.floor(Math.random() * 100) + 1
-    if(randomNumber < 6)return;
-  }
+  
   const serverName = msg.guild.name;
   const ServerId = msg.guild.id;
-  if(msg.author.id == SomgurID){
-    if (msg.content.startsWith(prefix + 'keyclear')) {
-      db.delete(ServerId);
-      return msg.reply(`Key with id = "${ServerId}" cleared`);
-    }
+
+  if (msg.content.startsWith(prefix + 'ping')) {
+    console.log("TEST")
+    msg.reply("Pong")
   }
-  if (msg.content.startsWith(prefix + 'DBwhat')){
-    if(msg.author.id == SomgurID){
-      db.get(ServerId).then(value => {
-        console.log("DB:")
-        console.log(value)
+  if (msg.content.startsWith(prefix + 'testing')) {
+    server_id = msg.guild.id;
+
+    console.log(server_id)
+    con.connect(function(err) {
+      if (err) throw err;
+      con.query(`SELECT * FROM react_roles WHERE server = '${server_id}'`, function (err, result) {
+        if (err) throw err;
       });
-    }
-  }
-  if (msg.content.startsWith(prefix + 'rradd')){
-    msg.reply("This command has been moved to slash command");
-  }
-  if (msg.content.startsWith(prefix + 'rrcreate')){
-    msg.reply("This command has been moved to slash command");
-  }
-  if (msg.content.startsWith(prefix + 'roll')) {
-    msg.reply("`!roll` has been moved to slash command")
+    });
+ 
   }
 });
-client.login(mySecret);
+// const LoginToken = "MTEzNTE3NjY2NTg1Nzc4OTk2Mg.Gu4jFb.p_jMID9ceYZFXLsZXbgYJ28hll8qRFaCrWaCZU";
+// const LoginToken2 = "MTAzMjk4NjA2OTY0MzI5Njc5OA.GQNIz-.aVxx04v7DFIMKNsvPXCCvKLUfqSUoWdGKrrZyw";
+const TOKEN = "MTAzMjk4NjA2OTY0MzI5Njc5OA.GBmcnZ.ZS1zxlcDTc3Mc29GljPt-JiQD33mlCYJLZvOlM";
+client.login(TOKEN);
+
 

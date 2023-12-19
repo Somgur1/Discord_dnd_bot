@@ -1,6 +1,19 @@
-const Database = require("@replit/database");
-const db = new Database();
+
+const Client = require("@replit/database");
+const db = new Client();
+const fs = require('fs');
+// const db = new Database();
+// const db = new Client();
 const emojiRegex = require('emoji-regex');
+// var mysql = require('mysql');
+
+// var con = mysql.createConnection({
+//   host: "localhost",
+//   user: "root",
+//   password: "",
+//   database: "dnd_bot",
+//   charset: 'utf8mb4' // Add charset to support emojis
+// });
 
 
 module.exports = {
@@ -62,77 +75,147 @@ module.exports = {
             });
         });
     },
-  rrcreateCommand: function(interaction, SomgurId){
-    if(interaction.user.id != SomgurId){
-            if (interaction.user.roles.cache.some(role => role.name !== 'DM')) {
-                return interaction.reply("You cant make this command");
+    rrcreateCommand: function(interaction, SomgurId){
+        if(interaction.user.id != SomgurId){
+                if (interaction.user.roles.cache.some(role => role.name !== 'DM')) {
+                    return interaction.reply("You cant make this command");
+                }
             }
+            const role = interaction.options.getRole('role_to_add');
+            roleName = role.name;
+            roleId = role.id;
+          
+            roleCheck = interaction.guild.roles.cache.find(role => role.name === roleName);
+          reaction = interaction.options.getString('emoji');
+        const match = /<(a?):(.+):(\d+)>/u.exec(reaction);
+          const emReg = emojiRegex();
+        var firstEmoji = reaction.match(emReg);
+        if (!firstEmoji){
+          if (!match){
+            return interaction.reply({ content: `Invalid emoji (${reaction})`, ephemeral: true })
         }
-        const role = interaction.options.getRole('role_to_add');
-        roleName = role.name;
-        roleId = role.id;
-      
-        roleCheck = interaction.guild.roles.cache.find(role => role.name === roleName);
-      reaction = interaction.options.getString('emoji');
-    const match = /<(a?):(.+):(\d+)>/u.exec(reaction);
-      const emReg = emojiRegex();
-    var firstEmoji = reaction.match(emReg);
-    if (!firstEmoji){
-      if (!match){
-        return interaction.reply({ content: `Invalid emoji (${reaction})`, ephemeral: true })
-    }
-      else{
-      reaction = match[0];
+          else{
+          reaction = match[0];
+          }
       }
-  }
-      else{
-      reaction = firstEmoji[0];
-    }
-        const channel = interaction.options.getChannel('channel_name')
-        server_id = interaction.guildId;
-        if(!role.editable){
-            return interaction.reply(`I cant edit that role (${roleName}).`);
+          else{
+          reaction = firstEmoji[0];
         }
-       channel.send({content: `Reaction roles` + `\n` +  `${role}  = ` + reaction, "allowedMentions": { "users" : []}}).then(sent => {
-            let id = sent.id;
-         try{
-            sent.react(reaction);
-         }
-         catch (error) {
-           return interaction.reply({ content: `Invalid emoji (${reaction})`, ephemeral: true });
-         }
-            if (match){
-                const [, animated, name, emid] = match;
-                reaction = match[2];
+            const channel = interaction.options.getChannel('channel_name')
+            server_id = interaction.guildId;
+            if(!role.editable){
+                return interaction.reply(`I cant edit that role (${roleName}).`);
             }
-            db.get(server_id).then(value => {
-                try{
-                    party = value.party;
-                    rrcommands = {
-                        "server":server_id,
-                        "messageid": id,
-                        "commands":[
-                            {"messageId":id, "reaction":reaction, "roleId":roleId, "roletree": role},
-                        ],
-                        party
-                    };
+           channel.send({content: `Reaction roles` + `\n` +  `${role}  = ` + reaction, "allowedMentions": { "users" : []}}).then(sent => {
+                let id = sent.id;
+             try{
+                sent.react(reaction);
+             }
+             catch (error) {
+               return interaction.reply({ content: `Invalid emoji (${reaction})`, ephemeral: true });
+             }
+                if (match){
+                    const [, animated, name, emid] = match;
+                    reaction = match[2];
                 }
-                catch (error) {
-                    rrcommands = {
-                        "server":server_id,
-                        "messageid": id,
-                        "commands":[
-                            {"messageId":id, "reaction":reaction, "roleId":roleId, "roletree": role},
-                        ],
-                        "party":
-                            []
-                    };
-                }
-                db.set(server_id, rrcommands);
-              console.log("after db Set")
-              console.log(rrcommands)
-              interaction.reply({ content: 'Created your reaction role', ephemeral: true });
+                // db.get(server_id).then(value => {
+                    // try{
+                    //     party = value.party;
+                    //     rrcommands = {
+                    //         "server":server_id,
+                    //         "messageid": id,
+                    //         "commands":[
+                    //             {"messageId":id, "reaction":reaction, "roleId":roleId, "roletree": role},
+                    //         ],
+                    //         party
+                    //     };
+                    // }
+                    // catch (error) {
+                        rrcommands = {
+                            "server":server_id,
+                            "messageid": id,
+                            "commands":[
+                                {"messageId":id, "reaction":reaction, "roleId":roleId, "roletree": role},
+                            ]
+                        };
+                        if (!fs.existsSync(`json/${server_id}`)){
+                        fs.mkdir(`json/${server_id}`, (err) => {
+                            if (err) throw err;
+                          });
+                        }
+                        fs.writeFile(`json/${server_id}/reactRoles_${server_id}.json`, JSON.stringify(rrcommands, null, 4), (err) => {
+                            if (err) throw err;
+                            console.log('rrcommands has been written to rrcommands.json');
+                        });
+                    // }
+                    // db.set(server_id, rrcommands);
+                  console.log("after db Set")
+                  console.log(rrcommands)
+                  interaction.reply({ content: 'Created your reaction role', ephemeral: true });
+                // });
             });
-        });
-  }
+      }
 }
+
+// db.get(server_id).then(value => {
+                // try{
+                //     party = value.party;
+                //     rrcommands = {
+                //         "server":server_id,
+                //         "messageid": id,
+                //         "commands":[
+                //             {"messageId":id, "reaction":reaction, "roleId":roleId, "roletree": role},
+                //         ],
+                //         party
+                //     };
+                // }
+                // catch (error) {
+                //     rrcommands = {
+                //         "server":server_id,
+                //         "messageid": id,
+                //         "commands":[
+                //             {"messageId":id, "reaction":reaction, "roleId":roleId, "roletree": role},
+                //         ],
+                //         "party":
+                //             []
+                //     };
+                // }
+
+                // var commands = {
+                //     "messageId":id,
+                //     "reaction": reaction,
+                //     "roleId":roleId,
+                //     "roletree": role
+                // }
+                // var commandsJson = JSON.stringify(commands);
+                // con.connect(function(err) {
+                //     if (err) throw err;
+                //     console.log("Connected!");
+                //     var con = `INSERT INTO react_roles (server, messageid, commands) VALUES ('${server_id}', '${id}'), '${commandsJson}'`;
+                //     con.query(sql, function (err, result) {
+                //       if (err) throw err;
+                //       console.log("1 record inserted");
+                //     });
+                //   });
+
+                // var commands = {
+                //     "messageId": message_id,
+                //     "reaction": reaction,
+                //     "roleId": roleId,
+                //     "roletree": role
+                //   };
+                //   console.log(reaction);
+                //   var commandsJson = JSON.stringify(commands);
+                //   console.log(`Serverid: ${server_id} (445180187358003220)`);
+                //   console.log(`MessageID: ${message_id}`);
+                //   console.log(`RoleID: ${roleId} (1039631188102483998)`);
+                  
+                //   var sql = `INSERT INTO react_roles (server, messageid, commands) VALUES (${server_id}, ${message_id}, '${commandsJson}')`;
+                  
+                //   mysqlLib.getConnection(function(err, sql) {
+                //     if (err) {
+                //       console.error('Error inserting data: ' + err.message);
+                //     } else {
+                //       console.log('Data inserted successfully.');
+                //     }
+                //   });

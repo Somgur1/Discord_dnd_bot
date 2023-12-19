@@ -1,16 +1,18 @@
 const Database = require("@replit/database");
 const db = new Database();
+const fs = require('fs');
 module.exports = {
   add_role_react: function(reaction, user, client){
     reactionName = reaction._emoji.name;
     msgId = reaction.message.id;
     server_id = reaction.message.guildId;
-    db.get(server_id).then(value => {
+    fs.readFile(`json/${server_id}/reactRoles_${server_id}.json`, 'utf8', (err, value) => {
       value_check = null;
       value_check = value;
       if (value_check == null){
         return
       }
+      value = JSON.parse(value);
       objectvalue = Object.values(value.commands);
       result = objectvalue.filter(playlist => playlist.reaction == reactionName);
 
