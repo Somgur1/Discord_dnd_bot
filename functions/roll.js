@@ -4,6 +4,7 @@ const {
 } = require('discord.js');
 
 module.exports = {
+  //functie voor de "roll" command
   roll_dice: function(interaction) {
     const dice = interaction.options.getString('dice');
     const GM = interaction.options.getUser('gm-roll');
@@ -12,6 +13,7 @@ module.exports = {
     const user_tree = interaction.user;
     const user_id = interaction.user.id;
     const username = interaction.user.username;
+    //Dit is de API
     const url = 'https://rolz.org/api/?' + dice + '.json';
     fetch(url)
       .then(response => {
@@ -19,6 +21,7 @@ module.exports = {
       })
       .then(user => {
         var result = String(user["result"]);
+        //Dit is het blok waar alle informatie in staat.
         const diceEmbed = new EmbedBuilder()
           .setColor('Red')
           .setTitle('Dice roller')
@@ -28,6 +31,7 @@ module.exports = {
             { name: 'details', value: user["details"], inline: true }
           );
         if (GM) {
+          //Dit is de informatie die naar de GM gestuurd wordt als daar voor wordt gekozen
           GM.send({ content: `<@${user_id}> rolled a ${dice} in ${server_name} (<#${interaction.channel.id}>)`, embeds: [diceEmbed] });
 
           interaction.reply({ embeds: [diceEmbed], ephemeral: true });
@@ -38,6 +42,7 @@ module.exports = {
 
       })
       .catch((error) => {
+        interaction.reply({ content: 'Er is geen waardige dobbelsteen ingevuld', ephemeral: true });
       });
   }
 }
